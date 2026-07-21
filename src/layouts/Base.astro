@@ -8,9 +8,33 @@ import { site } from '../data/site';
 interface Props {
   title: string;
   description: string;
+  /** Chemin absolu du site (ex. '/galerie/facade.webp') pour l'aperçu social. */
+  image?: string;
 }
-const { title, description } = Astro.props;
+const { title, description, image = '/galerie/facade.webp' } = Astro.props;
 const fullTitle = `${title} — ${site.name}`;
+// URLs absolues requises pour canonical + aperçus sociaux (og:image, etc.)
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+
+// Données structurées — établissement scolaire (recherche locale, Google).
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'EducationalOrganization',
+  name: site.name,
+  slogan: site.tagline,
+  url: Astro.site?.href,
+  telephone: site.contact.phone,
+  email: site.contact.email,
+  foundingDate: String(site.foundedYear),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Malika',
+    addressLocality: 'Dakar',
+    addressRegion: 'Dakar',
+    addressCountry: 'SN',
+  },
+};
 ---
 <!doctype html>
 <html lang="fr">
@@ -18,12 +42,22 @@ const fullTitle = `${title} — ${site.name}`;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/logo/sem-school-mark.svg" />
+    <meta name="theme-color" content="#0d1a33" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_SN" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
     <a href="#contenu" class="visually-hidden">Aller au contenu</a>
