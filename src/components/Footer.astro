@@ -1,0 +1,38 @@
+---
+// Barre de pied de page — design 1B (prolonge le bloc contact navy).
+import { site } from '../data/site';
+---
+<footer class="footerbar">
+  <div class="footerbar__inner">
+    <div class="footerbar__brand">
+      <img src="/logo/sem-school-mark-ondark.svg" alt="" class="footerbar__mark" width="34" height="34" />
+      <span class="footerbar__name">SEM SCHOOL</span>
+    </div>
+    <div class="footerbar__legal">
+      École privée fondée en {site.foundedYear} · {site.official.recepisse} · {site.nationalMotto}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footerbar { background: var(--brand-primary); color: var(--text-inverse); }
+  .footerbar__inner {
+    max-width: 1220px;
+    margin-inline: auto;
+    padding: 24px 48px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footerbar__brand { display: flex; align-items: center; gap: 10px; }
+  .footerbar__mark { height: 34px; width: auto; opacity: 0.9; }
+  .footerbar__name { font-family: var(--font-serif-display); font-weight: var(--weight-bold); font-size: 16px; }
+  .footerbar__legal { font-size: 11.5px; opacity: 0.55; letter-spacing: 0.02em; }
+
+  @media (max-width: 720px) {
+    .footerbar__inner { padding: 20px var(--space-6); }
+  }
+</style>

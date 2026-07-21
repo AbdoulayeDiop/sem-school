@@ -1,0 +1,42 @@
+---
+// ContactMethod — ligne « icône-en-cercle + libellé + valeur », reprend le
+// motif icon-in-circle des flyers. Rendu <a> si href fourni.
+import Icon from './Icon.astro';
+interface Props {
+  icon: string;
+  label: string;
+  value: string;
+  href?: string;
+  variant?: 'navy' | 'gold' | 'soft' | 'success-soft';
+}
+const { icon, label, value, href, variant = 'soft' } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+<Tag class="cm" href={href} {...(href ? { rel: 'noopener' } : {})}>
+  <span class:list={['cm__icon', `cm__icon--${variant}`]}>
+    <Icon name={icon} size={18} />
+  </span>
+  <span class="cm__text">
+    <span class="cm__label">{label}</span>
+    <span class="cm__value">{value}</span>
+  </span>
+</Tag>
+
+<style>
+  .cm { display: flex; gap: var(--space-3); align-items: center; text-decoration: none; }
+  a.cm:hover .cm__value { color: var(--brand-primary); }
+  .cm__icon {
+    width: 40px; height: 40px; flex-shrink: 0;
+    border-radius: var(--radius-circle);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: filter var(--duration-fast) var(--ease-standard);
+  }
+  a.cm:hover .cm__icon { filter: brightness(0.94); }
+  .cm__icon--navy { background: var(--brand-primary); color: var(--text-inverse); }
+  .cm__icon--gold { background: var(--brand-accent); color: var(--navy-900); }
+  .cm__icon--soft { background: var(--surface-accent-soft-blue); color: var(--brand-primary); }
+  .cm__icon--success-soft { background: var(--state-success-soft); color: var(--state-success); }
+  .cm__text { display: flex; flex-direction: column; }
+  .cm__label { font-size: var(--text-caption); color: var(--text-muted); }
+  .cm__value { font-size: var(--text-body); font-weight: var(--weight-semibold); color: var(--text-heading); }
+</style>

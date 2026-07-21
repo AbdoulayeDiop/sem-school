@@ -1,0 +1,67 @@
+---
+// Button — CTA de la marque SEM School. Rendu <a> (site statique, liens).
+// Variantes : primary | accent | secondary | ghost. Tailles : sm | md | lg.
+interface Props {
+  href: string;
+  variant?: 'primary' | 'accent' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  onDark?: boolean;
+}
+const { href, variant = 'primary', size = 'md', class: className, onDark = false } = Astro.props;
+---
+<a
+  href={href}
+  class:list={['btn', `btn--${variant}`, `btn--${size}`, { 'btn--ondark': onDark }, className]}
+>
+  <slot />
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard),
+      border-color var(--duration-fast) var(--ease-standard);
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn--sm { padding: 8px 16px; font-size: var(--text-body-sm); border-radius: var(--radius-sm); }
+  .btn--md { padding: 11px 22px; font-size: var(--text-body); border-radius: var(--radius-md); }
+  .btn--lg { padding: 14px 28px; font-size: var(--text-body-lg); border-radius: var(--radius-md); }
+
+  .btn--primary { background: var(--brand-primary); color: var(--text-inverse); border-color: var(--brand-primary); }
+  .btn--primary:hover { background: var(--brand-primary-hover); color: var(--text-inverse); }
+  .btn--primary:active { background: var(--brand-primary-active); }
+
+  .btn--accent { background: var(--brand-accent); color: var(--navy-900); border-color: var(--brand-accent); }
+  .btn--accent:hover { background: var(--brand-accent-hover); color: var(--navy-900); }
+  .btn--accent:active { background: var(--brand-accent-active); }
+
+  .btn--secondary { background: var(--surface-card); color: var(--brand-primary); border-color: var(--border-strong); }
+  .btn--secondary:hover { background: var(--gray-50); color: var(--brand-primary); }
+
+  .btn--ghost { background: transparent; color: var(--brand-primary); }
+  .btn--ghost:hover { background: var(--gray-100); color: var(--brand-primary); }
+
+  /* Sur fond navy (hero) — bouton secondaire clair et contrasté */
+  .btn--secondary.btn--ondark {
+    background: transparent;
+    color: var(--text-inverse);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  .btn--secondary.btn--ondark:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-inverse);
+  }
+</style>

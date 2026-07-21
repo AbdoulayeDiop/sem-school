@@ -1,0 +1,27 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+
+# environment
+.env
+.env.production
+
+# macOS / editor
+.DS_Store
+
+# config outils locaux
+.claude/
+
+# design system handoff + design mockups (source reference, not shipped)
+design-system/
+design-v2/
+*.zip
+
+# photos originales haute résolution (sauvegarde locale, non déployées)
+_photos-originals/

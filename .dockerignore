@@ -1,0 +1,24 @@
+# Sorties de build & caches
+dist
+.astro
+node_modules
+
+# Git & éditeur
+.git
+.gitignore
+.DS_Store
+
+# Références de design (volumineuses, non nécessaires au build)
+design-system
+design-v2
+*.zip
+
+# Docs / docker
+README.md
+Dockerfile
+.dockerignore
+
+# Environnement
+.env
+.env.production
+npm-debug.log*

@@ -1,0 +1,39 @@
+---
+// Alert — encadré d'annonce à bordure gauche, reprend les callouts encadrés
+// des flyers officiels (« OBJECTIF », « COURS DE VACANCES »).
+import Icon from './Icon.astro';
+interface Props {
+  title?: string;
+  variant?: 'info' | 'success' | 'warning' | 'danger';
+  icon?: string;
+  class?: string;
+}
+const { title, variant = 'info', icon, class: className } = Astro.props;
+---
+<div class:list={['alert', `alert--${variant}`, className]}>
+  {icon && <div class="alert__icon"><Icon name={icon} size={20} /></div>}
+  <div>
+    {title && <div class="alert__title">{title}</div>}
+    <div class="alert__body"><slot /></div>
+  </div>
+</div>
+
+<style>
+  .alert {
+    display: flex;
+    gap: var(--space-3);
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    border-left: 4px solid;
+    color: var(--navy-800);
+    font-family: var(--font-sans);
+  }
+  .alert__icon { flex-shrink: 0; margin-top: 2px; }
+  .alert__title { font-weight: var(--weight-semibold); margin-bottom: 4px; }
+  .alert__body { font-size: var(--text-body-sm); line-height: var(--leading-normal); }
+
+  .alert--info { background: var(--state-info-soft); border-left-color: var(--blue-500); }
+  .alert--success { background: var(--state-success-soft); border-left-color: var(--state-success); }
+  .alert--warning { background: var(--state-warning-soft); border-left-color: var(--state-warning); }
+  .alert--danger { background: var(--state-danger-soft); border-left-color: var(--state-danger); }
+</style>

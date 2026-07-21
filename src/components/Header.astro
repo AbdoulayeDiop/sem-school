@@ -1,0 +1,103 @@
+---
+// Topbar du site — design 1B (fond crème chaleureux, nav en ancres).
+// Menu mobile en CSS pur (checkbox hack), fermeture au clic via script.
+import Button from './Button.astro';
+import { nav, site } from '../data/site';
+const current = Astro.url.pathname;
+---
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="brand" href="/" aria-label={`${site.name} — accueil`}>
+      <img src="/logo/sem-school-mark.svg" alt="" class="brand__mark" width="44" height="44" />
+      <span class="brand__name">SEM SCHOOL</span>
+    </a>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+    <label for="nav-toggle" class="nav-burger" aria-label="Ouvrir le menu">
+      <span></span><span></span><span></span>
+    </label>
+
+    <nav class="nav" aria-label="Navigation principale">
+      {nav.map((l) => (
+        <a href={l.href} class="nav__link" aria-current={l.href === '/' && current === '/' ? 'page' : undefined}>
+          {l.label}
+        </a>
+      ))}
+      <Button href="/#contact" variant="primary" size="sm" class="nav__cta">S'inscrire</Button>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Referme le menu mobile après un clic sur un lien (ancres de même page).
+  const toggle = document.getElementById('nav-toggle') as HTMLInputElement | null;
+  document.querySelectorAll('.nav a').forEach((link) => {
+    link.addEventListener('click', () => { if (toggle) toggle.checked = false; });
+  });
+</script>
+
+<style>
+  .topbar {
+    background: var(--surface-warm);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    border-bottom: 1px solid rgba(201, 150, 47, 0.12);
+  }
+  .topbar__inner {
+    max-width: 1220px;
+    margin-inline: auto;
+    padding: 16px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .brand__mark { height: 44px; width: auto; display: block; }
+  .brand__name {
+    font-family: var(--font-serif-display);
+    font-weight: var(--weight-black);
+    font-size: 20px;
+    color: var(--text-heading);
+    letter-spacing: 0.01em;
+  }
+
+  .nav { display: flex; align-items: center; gap: 28px; }
+  .nav__link {
+    font-size: var(--text-body-sm);
+    font-weight: var(--weight-medium);
+    color: var(--text-body);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-standard);
+    white-space: nowrap;
+  }
+  .nav__link:hover { color: var(--brand-primary); }
+
+  /* Menu mobile (checkbox hack) */
+  .nav-toggle, .nav-burger { display: none; }
+  .nav-burger {
+    width: 40px; height: 40px; cursor: pointer;
+    flex-direction: column; justify-content: center; gap: 5px;
+    padding: 8px; border-radius: var(--radius-md);
+  }
+  .nav-burger span { display: block; height: 2px; width: 100%; background: var(--brand-primary); border-radius: 2px; }
+
+  @media (max-width: 860px) {
+    .topbar__inner { padding: 14px var(--space-6); }
+    .nav-burger { display: flex; }
+    .nav {
+      display: none;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+      width: 100%;
+      padding-top: var(--space-3);
+    }
+    .nav-toggle:checked ~ .nav { display: flex; }
+    .nav__link { width: 100%; padding: 10px 4px; border-bottom: 1px solid rgba(201, 150, 47, 0.15); }
+    /* :global() — .nav__cta cible le <a> racine de <Button> (autre portée). */
+    :global(.nav__cta) { margin-top: var(--space-2); }
+  }
+</style>

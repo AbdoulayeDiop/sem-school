@@ -1,0 +1,31 @@
+---
+// Badge — pastille de statut/libellé, ex. « Année scolaire 2026-2027 ».
+interface Props {
+  variant?: 'gold' | 'navy' | 'info' | 'success' | 'danger';
+  class?: string;
+}
+const { variant = 'gold', class: className } = Astro.props;
+---
+<span class:list={['badge', `badge--${variant}`, className]}>
+  <slot />
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+  .badge--gold { background: var(--surface-accent-soft); color: var(--text-accent); }
+  .badge--navy { background: var(--navy-800); color: var(--text-inverse); }
+  .badge--info { background: var(--state-info-soft); color: var(--blue-600); }
+  .badge--success { background: var(--state-success-soft); color: var(--state-success); }
+  .badge--danger { background: var(--state-danger-soft); color: var(--state-danger); }
+</style>
