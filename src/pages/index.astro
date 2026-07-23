@@ -12,11 +12,11 @@ import { site, atouts, tarifs, directionWord } from '../data/site';
 const stats = [
   { num: '2026', label: 'Année de création' },
   { num: 'Mat.→Tle', label: 'Tous les niveaux' },
-  { num: '100%', label: 'Objectif de réussite' },
+  { num: 'Bilingue', label: 'Dès la classe de CI' },
 ];
 
 const parcours = [
-  { n: 1, name: 'Maternelle', age: '3 – 5 ans', classes: 'Petite · Moyenne · Grande section' },
+  { n: 1, name: 'Préscolaire', age: '3 – 5 ans', classes: 'Petite · Moyenne · Grande section' },
   { n: 2, name: 'Élémentaire', age: '6 – 11 ans', classes: 'CI · CP · CE1 · CE2 · CM1 · CM2' },
   { n: 3, name: 'Collège', age: '12 – 15 ans', classes: '6ème · 5ème · 4ème · 3ème' },
   { n: 4, name: 'Lycée', age: '16 – 18 ans', classes: 'Seconde · Première · Terminale (S & L)', last: true },
@@ -32,7 +32,7 @@ const galerie = [
 ---
 <Base
   title="Accueil"
-  description="SEM School — école privée à Malika, Dakar, de la maternelle à la terminale. Effectifs réduits, 100% de réussite aux examens. Inscriptions 2026-2027."
+  description="SEM School — école privée à Malika, Dakar, du préscolaire à la terminale. Effectifs réduits, 100% de réussite aux examens. Inscriptions 2026-2027."
 >
   <!-- Hero -->
   <section class="hero wrap">
@@ -40,7 +40,7 @@ const galerie = [
       <Badge variant="gold">Rentrée {site.schoolYear}</Badge>
       <h1 class="hero__title serif">Apprendre.<br />Grandir.<br /><span class="hero__accent">Réussir.</span></h1>
       <p class="hero__lead">
-        École privée à Malika, Dakar, de la maternelle à la terminale. Un cadre bienveillant à
+        École privée à Malika, Dakar, du préscolaire à la terminale. Un cadre bienveillant à
         effectifs réduits, tourné vers 100% de réussite aux examens.
       </p>
       <div class="hero__actions">
@@ -78,25 +78,6 @@ const galerie = [
     </div>
   </section>
 
-  <!-- Niveaux parcours -->
-  <section id="niveaux" class="parcours wrap">
-    <div class="sec-head">
-      <p class="overline">Un parcours complet</p>
-      <h2 class="sec-title serif">De la maternelle à la terminale</h2>
-    </div>
-    <div class="parcours__grid">
-      <div class="parcours__line" aria-hidden="true"></div>
-      {parcours.map((p) => (
-        <div class="step">
-          <div class:list={['step__num serif', { 'step__num--last': p.last }]}>{p.n}</div>
-          <h3 class="step__name">{p.name}</h3>
-          <div class="step__age">{p.age}</div>
-          <div class="step__classes">{p.classes}</div>
-        </div>
-      ))}
-    </div>
-  </section>
-
   <!-- Mot du fondateur -->
   <section class="fondateur wrap">
     <div class="fondateur__grid">
@@ -114,8 +95,27 @@ const galerie = [
       </div>
       <div class="fondateur__media">
         <div class="fondateur__badge"><Icon name="quote" size={30} /></div>
-        <div class="fondateur__photo"><ImageSlot label="Portrait du fondateur / directeur" radius={20} /></div>
+        <div class="fondateur__photo"><ImageSlot label="Portrait du fondateur / directeur" src="/galerie/fondateur.webp" radius={20} /></div>
       </div>
+    </div>
+  </section>
+
+  <!-- Niveaux parcours -->
+  <section id="niveaux" class="parcours wrap">
+    <div class="sec-head">
+      <p class="overline">Un parcours complet</p>
+      <h2 class="sec-title serif">Du préscolaire à la terminale</h2>
+    </div>
+    <div class="parcours__grid">
+      <div class="parcours__line" aria-hidden="true"></div>
+      {parcours.map((p) => (
+        <div class="step">
+          <div class:list={['step__num serif', { 'step__num--last': p.last }]}>{p.n}</div>
+          <h3 class="step__name">{p.name}</h3>
+          <div class="step__age">{p.age}</div>
+          <div class="step__classes">{p.classes}</div>
+        </div>
+      ))}
     </div>
   </section>
 
@@ -145,7 +145,7 @@ const galerie = [
         <div class="tl-item">
           <div class="tl-date"><span class="tl-day serif">10</span><span class="tl-month">AOÛT</span></div>
           <span class="tl-dot"></span>
-          <p class="tl-text">Ouverture des inscriptions pour la <strong>maternelle</strong> et démarrage des cours de vacances.</p>
+          <p class="tl-text">Ouverture des inscriptions pour le <strong>préscolaire</strong> et démarrage des cours de vacances.</p>
         </div>
         <div class="tl-item">
           <div class="tl-date"><span class="tl-day serif">03</span><span class="tl-month">SEPT.</span></div>
@@ -260,7 +260,7 @@ const galerie = [
 
   /* ---- Atouts (bande navy) ---- */
   .atouts { background: var(--brand-primary); color: var(--text-inverse); padding-block: 52px; }
-  .atouts__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  .atouts__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
   .atout { text-align: center; }
   .atout__icon {
     width: 60px; height: 60px; border-radius: var(--radius-circle);
@@ -283,6 +283,7 @@ const galerie = [
 
   .fondateur__media { position: relative; }
   .fondateur__photo { height: 420px; border-radius: 20px; overflow: hidden; }
+  .fondateur__photo :global(img) { object-position: top; }
   .fondateur__badge {
     position: absolute; top: -22px; right: -22px; z-index: 2;
     width: 76px; height: 76px; border-radius: var(--radius-circle);
@@ -371,7 +372,7 @@ const galerie = [
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; gap: 40px; }
     .hero__media { margin-bottom: 18px; }
-    .atouts__grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+    .atouts__grid { grid-template-columns: repeat(3, 1fr); gap: 28px; }
     .parcours__grid { grid-template-columns: repeat(2, 1fr); gap: 32px 10px; }
     .parcours__line { display: none; }
     .tarifs__grid { grid-template-columns: repeat(2, 1fr); }

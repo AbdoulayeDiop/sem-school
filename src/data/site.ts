@@ -45,6 +45,7 @@ export const atouts = [
   { icon: 'utensils', title: 'Réfectoire & cantine', text: 'Des repas équilibrés servis sur place.' },
   { icon: 'activity', title: 'Infirmerie', text: 'La santé et la sécurité des élèves assurées.' },
   { icon: 'monitor', title: 'Salle informatique', text: "L'initiation au numérique dès le plus jeune âge." },
+  { icon: 'languages', title: 'Bilingue', text: 'Enseignement bilingue à partir de la classe de CI.' },
 ] as const;
 
 // Offre pédagogique complète — préscolaire → Terminale (page Nos niveaux)
@@ -126,7 +127,7 @@ export const tarifs = {
   currency: 'FCFA',
   provisional: true,
   rows: [
-    { name: 'Maternelle', sub: 'PS · MS · GS', inscription: '25 000', mensualite: '15 000', featured: false },
+    { name: 'Préscolaire', sub: 'PS · MS · GS', inscription: '25 000', mensualite: '15 000', featured: false },
     { name: 'Élémentaire', sub: 'CI → CM2', inscription: '30 000', mensualite: '18 000', featured: false },
     { name: 'Collège', sub: '6ème → 3ème', inscription: '35 000', mensualite: '22 000', featured: false },
     { name: 'Lycée', sub: '2nde → Tle (S & L)', inscription: '40 000', mensualite: '28 000', featured: true },
