@@ -179,13 +179,22 @@ const galerie = [
             <div class="tcard__ins serif">{r.inscription} <span>{tarifs.currency}</span></div>
             <div class="tcard__k">Mensualité</div>
             <div class="tcard__mens serif">{r.mensualite} <span>{tarifs.currency}</span></div>
+            <div class="tcard__extras">
+              <div class="tcard__row"><span>2 uniformes</span><span>{r.uniformes} {tarifs.currency}</span></div>
+              {r.sport && <div class="tcard__row"><span>Tenue de sport <em>(optionnel)</em></span><span>{r.sport} {tarifs.currency}</span></div>}
+            </div>
           </div>
         </div>
       ))}
     </div>
-    {tarifs.provisional && (
-      <p class="tarifs__note">Montants provisoires, donnés à titre indicatif — à confirmer par la direction.</p>
-    )}
+    <div class="tarifs__foot">
+      <ul class="tarifs__options">
+        {tarifs.options.map((o) => (
+          <li><strong>{o.label}</strong> — {o.value} <span class="tarifs__tag">optionnel</span></li>
+        ))}
+      </ul>
+      {tarifs.notes.map((n) => <p class="tarifs__rule">{n}</p>)}
+    </div>
   </section>
 
   <!-- Contact + localisation -->
@@ -352,7 +361,23 @@ const galerie = [
   .tcard--featured .tcard__ins { color: var(--text-inverse); }
   .tcard--featured .tcard__mens { color: var(--gold-400); }
   .tcard--featured .tcard__ins span, .tcard--featured .tcard__mens span { color: rgba(255, 255, 255, 0.6); }
-  .tarifs__note { text-align: center; font-size: var(--text-caption); color: var(--text-muted); font-style: italic; margin: var(--space-6) 0 0; }
+  /* Frais annexes par carte (uniformes, sport) */
+  .tcard__extras { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 8px; }
+  .tcard__row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; }
+  .tcard__row > span:first-child { color: var(--text-muted); }
+  .tcard__row > span:last-child { color: var(--text-heading); font-weight: var(--weight-semibold); white-space: nowrap; }
+  .tcard__row em { font-style: normal; font-size: 11px; color: var(--text-muted); }
+  .tcard--featured .tcard__extras { border-top-color: rgba(255, 255, 255, 0.12); }
+  .tcard--featured .tcard__row > span:first-child, .tcard--featured .tcard__row em { color: rgba(255, 255, 255, 0.65); }
+  .tcard--featured .tcard__row > span:last-child { color: var(--text-inverse); }
+  /* Pied de section : options générales + notes */
+  .tarifs__foot { margin-top: var(--space-6); text-align: center; }
+  .tarifs__options { list-style: none; margin: 0 0 var(--space-4); padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; }
+  .tarifs__options li { font-size: 14px; color: var(--text-body); }
+  .tarifs__options strong { color: var(--text-heading); }
+  .tarifs__tag { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-accent); background: var(--gold-100); border-radius: var(--radius-pill); padding: 2px 8px; }
+  .tarifs__rule { font-size: var(--text-caption); color: var(--text-muted); margin: 4px 0 0; }
+  .tarifs__note { text-align: center; font-size: var(--text-caption); color: var(--text-muted); font-style: italic; margin: var(--space-4) 0 0; }
 
   /* ---- Contact ---- */
   .contact { background: var(--brand-primary); color: var(--text-inverse); }

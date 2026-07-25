@@ -125,12 +125,20 @@ export const admissions2627 = {
 // Frais de scolarité — VALEURS PROVISOIRES (FCFA), en cartes (design 1B).
 export const tarifs = {
   currency: 'FCFA',
-  provisional: true,
+  provisional: false,
   rows: [
-    { name: 'Préscolaire', sub: 'PS · MS · GS', inscription: '25 000', mensualite: '15 000', featured: false },
-    { name: 'Élémentaire', sub: 'CI → CM2', inscription: '30 000', mensualite: '18 000', featured: false },
-    { name: 'Collège', sub: '6ème → 3ème', inscription: '35 000', mensualite: '22 000', featured: false },
-    { name: 'Lycée', sub: '2nde → Tle (S & L)', inscription: '40 000', mensualite: '28 000', featured: true },
+    { name: 'Préscolaire', sub: 'PS · MS · GS', inscription: '20 000', mensualite: '15 000', uniformes: '10 000', sport: null, featured: false },
+    { name: 'Élémentaire', sub: 'CI → CM2', inscription: '25 000', mensualite: '20 000', uniformes: '15 000', sport: '8 000', featured: false },
+    { name: 'Collège', sub: '6ème → 3ème', inscription: '30 000', mensualite: '25 000', uniformes: '20 000', sport: '10 000', featured: false },
+    { name: 'Lycée', sub: '2nde → Tle (S & L)', inscription: '35 000', mensualite: '30 000', uniformes: '25 000', sport: '13 000', featured: true },
+  ],
+  notes: [
+    "En plus des frais d'inscription, le dernier mois de scolarité est réglé lors de l'inscription (juin pour le préscolaire et l'élémentaire, juillet pour le collège et le lycée).",
+    'Les 2 uniformes sont obligatoires lors de la première inscription uniquement.',
+  ],
+  options: [
+    { label: 'Cantine', value: '10 000 FCFA / mois' },
+    { label: 'Transport', value: "Tarif selon le lieu d'habitation" },
   ],
 } as const;
 
@@ -168,7 +176,7 @@ export const coursVacances = {
 
 // Mot de la direction — TEXTE PROVISOIRE (page L'école), à valider et signer.
 export const directionWord = {
-  provisional: true,
+  provisional: false,
   paragraphs: [
     "C'est avec fierté que nous ouvrons les portes de SEM School pour l'année scolaire 2026-2027. Notre école est née d'une conviction simple : chaque enfant mérite un enseignement de qualité, dans un cadre à la fois bienveillant et exigeant, du préscolaire jusqu'au lycée.",
     "Notre engagement tient en trois mots — Apprendre, Grandir, Réussir. Grâce à des effectifs réduits et à un suivi personnalisé, nous mettons tout en œuvre pour préparer chaque élève à la réussite de ses examens.",
