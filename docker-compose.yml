@@ -1,0 +1,19 @@
+# SEM School — site statique (Astro → nginx) derrière Nginx Proxy Manager.
+# NPM route le trafic via le réseau partagé : dans NPM, « Forward Hostname » =
+# sem-school, « Forward Port » = 80. Aucun port n'est publié sur l'hôte.
+services:
+  web:
+    build: .
+    image: sem-school:latest
+    container_name: sem-school
+    restart: unless-stopped
+    expose:
+      - "80"                # visible sur le réseau interne uniquement (pour NPM)
+    networks:
+      - main-network
+
+networks:
+  main-network:
+    # Réseau du reverse proxy nginx, créé en dehors de ce compose.
+    # (docker network create main-network)
+    external: true
