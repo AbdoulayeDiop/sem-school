@@ -286,7 +286,10 @@ const galerie = [
             {g.rows.map((r) => (
               <tr>
                 <th scope="row" class="ttab__classe">{r.classe}</th>
-                <td>{fcfa(r.inscription)}</td>
+                <td class="ttab__free">
+                  <s>{fcfa(r.inscription)}</s>
+                  <strong>0 F</strong>
+                </td>
                 <td>{fcfa(r.generaux)}</td>
                 <td>{fcfa(r.uniformes)}</td>
                 <td class="ttab__mens">{fcfa(r.mensualite)}</td>
@@ -302,7 +305,6 @@ const galerie = [
         ))}
       </table>
     </div>
-    <p class="ttab__legend">Montant barré : total sans l'offre. Montant en gras : total à payer, droits d'inscription déduits.</p>
 
     <div class="tarifs__foot">
       <p class="tarifs__eligibility">{tarifs.eligibility}</p>
@@ -503,10 +505,11 @@ const galerie = [
   .ttab tbody .ttab__mens { font-weight: var(--weight-semibold); color: var(--text-heading); }
   .ttab tbody .ttab__opt { color: var(--text-muted); }
   .ttab tbody .ttab__hl { background: var(--gold-100); }
+  .ttab tbody .ttab__free s { display: block; font-size: 12px; color: var(--text-muted); }
+  .ttab tbody .ttab__free strong { display: block; font-weight: var(--weight-bold); color: var(--text-accent); }
   .ttab tbody .ttab__hl s { display: block; font-size: 12px; color: var(--text-muted); }
   .ttab tbody .ttab__hl strong { display: block; font-size: 17px; font-weight: var(--weight-black); color: var(--text-accent); }
   .ttab tbody:last-child tr:last-child td, .ttab tbody:last-child tr:last-child th { border-bottom: 0; }
-  .ttab__legend { font-size: var(--text-caption); color: var(--text-muted); text-align: center; margin: var(--space-3) 0 0; }
   /* Pied de section : condition d'application + notes */
   .tarifs__foot { margin-top: var(--space-6); text-align: center; }
   .tarifs__eligibility { font-size: 14px; font-weight: var(--weight-semibold); color: var(--text-heading); margin: 0 0 var(--space-3); }
