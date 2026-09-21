@@ -7,7 +7,14 @@ import Badge from '../components/Badge.astro';
 import Button from '../components/Button.astro';
 import Icon from '../components/Icon.astro';
 import ImageSlot from '../components/ImageSlot.astro';
-import { site, atouts, tarifs, directionWord } from '../data/site';
+import { site, atouts, tarifs, reportage, directionWord } from '../data/site';
+
+// Montants en FCFA : séparateur de milliers insécable (10000 → « 10 000 F »)
+const fcfa = (n: number) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')} F`;
+
+// Carte OSM : cadrage ~1,1 km x 0,8 km autour de l'école, marqueur sur le point exact
+const { lat, lon } = site.contact.coords;
+const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${(lon - 0.005).toFixed(6)}%2C${(lat - 0.0035).toFixed(6)}%2C${(lon + 0.005).toFixed(6)}%2C${(lat + 0.0035).toFixed(6)}&layer=mapnik&marker=${lat}%2C${lon}`;
 
 const stats = [
   { num: '2026', label: 'Année de création' },
@@ -20,6 +27,12 @@ const parcours = [
   { n: 2, name: 'Élémentaire', age: '6 – 11 ans', classes: 'CI · CP · CE1 · CE2 · CM1 · CM2' },
   { n: 3, name: 'Collège', age: '12 – 15 ans', classes: '6ème · 5ème · 4ème · 3ème' },
   { n: 4, name: 'Lycée', age: '16 – 18 ans', classes: 'Seconde · Première · Terminale (S & L)', last: true },
+];
+
+// Clips d'ambiance de la galerie (9 août 2026), ré-encodés en 720p sans audio
+const galerieVideos = [
+  { src: '/video/classe.mp4', poster: '/video/classe.webp', label: 'Une salle de classe' },
+  { src: '/video/infirmerie.mp4', poster: '/video/infirmerie.webp', label: "L'infirmerie" },
 ];
 
 const galerie = [
@@ -64,6 +77,54 @@ const galerie = [
       </div>
     </div>
   </section>
+
+  <!-- Reportage TV du lancement -->
+  <section class="reportage">
+    <div class="reportage__inner wrap">
+      <div class="reportage__text">
+        <p class="overline">Ils en parlent</p>
+        <h2 class="sec-title serif">{reportage.title}</h2>
+        <p class="reportage__desc">{reportage.text}</p>
+        <p class="reportage__meta">{reportage.source} · {reportage.duration}</p>
+      </div>
+      <div class="reportage__player">
+        <button
+          class="ytfacade"
+          type="button"
+          data-yt={reportage.youtubeId}
+          data-title={reportage.title}
+          aria-label={`Lire le reportage : ${reportage.title}`}
+        >
+          <img src={reportage.poster} alt="" width="1280" height="720" loading="lazy" decoding="async" />
+          <span class="ytfacade__play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M8 5.5v13l11-6.5z" /></svg>
+          </span>
+        </button>
+        <noscript>
+          <a class="ytfacade__fallback" href={reportage.url} target="_blank" rel="noopener">Voir le reportage sur YouTube</a>
+        </noscript>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Façade YouTube : l'iframe (et donc tout contact avec Google) n'est créée
+    // qu'au clic du visiteur.
+    document.querySelectorAll<HTMLButtonElement>('.ytfacade').forEach((btn) => {
+      btn.addEventListener(
+        'click',
+        () => {
+          const frame = document.createElement('iframe');
+          frame.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.yt}?autoplay=1&rel=0`;
+          frame.title = btn.dataset.title ?? 'Reportage vidéo';
+          frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share';
+          frame.allowFullscreen = true;
+          btn.replaceWith(frame);
+        },
+        { once: true },
+      );
+    });
+  </script>
 
   <!-- Atouts (Notre école) -->
   <section id="ecole" class="atouts">
@@ -125,6 +186,14 @@ const galerie = [
       <p class="overline">La vie à l'école</p>
       <h2 class="sec-title serif">En images</h2>
     </div>
+    <div class="galerie__videos">
+      {galerieVideos.map((v) => (
+        <figure class="gvid">
+          <video src={v.src} poster={v.poster} muted loop playsinline preload="none" aria-label={v.label}></video>
+          <figcaption class="gvid__cap">{v.label}</figcaption>
+        </figure>
+      ))}
+    </div>
     <div class="galerie__grid">
       {galerie.map((photo, i) => (
         <div class:list={['galerie__cell', { 'galerie__cell--big': i === 0 }]}>
@@ -133,6 +202,27 @@ const galerie = [
       ))}
     </div>
   </section>
+
+  <script>
+    // Clips de galerie : rien n'est téléchargé (preload="none") tant que le clip
+    // n'entre pas dans l'écran ; il se met en pause dès qu'il en sort.
+    const clips = document.querySelectorAll<HTMLVideoElement>('.gvid video');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      clips.forEach((v) => (v.controls = true));
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            const v = e.target as HTMLVideoElement;
+            if (e.isIntersecting) v.play().catch(() => (v.controls = true));
+            else v.pause();
+          });
+        },
+        { threshold: 0.35 },
+      );
+      clips.forEach((v) => io.observe(v));
+    }
+  </script>
 
   <!-- Calendrier timeline -->
   <section class="calendrier">
@@ -164,35 +254,58 @@ const galerie = [
   <!-- Tarifs -->
   <section id="tarifs" class="tarifs wrap">
     <div class="sec-head sec-head--tight">
-      <p class="overline">Frais de scolarité</p>
+      <p class="overline">Frais de scolarité · Année scolaire {site.schoolYear}</p>
       <h2 class="sec-title serif">Nos tarifs</h2>
     </div>
-    <div class="tarifs__grid">
-      {tarifs.rows.map((r) => (
-        <div class:list={['tcard', { 'tcard--featured': r.featured }]}>
-          <div class="tcard__head">
-            <div class="tcard__name serif">{r.name}</div>
-            <div class="tcard__sub">{r.sub}</div>
-          </div>
-          <div class="tcard__body">
-            <div class="tcard__k">Inscription</div>
-            <div class="tcard__ins serif">{r.inscription} <span>{tarifs.currency}</span></div>
-            <div class="tcard__k">Mensualité</div>
-            <div class="tcard__mens serif">{r.mensualite} <span>{tarifs.currency}</span></div>
-            <div class="tcard__extras">
-              <div class="tcard__row"><span>2 uniformes</span><span>{r.uniformes} {tarifs.currency}</span></div>
-              {r.sport && <div class="tcard__row"><span>Tenue de sport <em>(optionnel)</em></span><span>{r.sport} {tarifs.currency}</span></div>}
-            </div>
-          </div>
-        </div>
-      ))}
+
+    <div class="offre">
+      <span class="offre__badge">Offre</span>
+      <div>
+        <p class="offre__title">{tarifs.offer.title}</p>
+        <p class="offre__text">{tarifs.offer.text}</p>
+      </div>
     </div>
-    <div class="tarifs__foot">
-      <ul class="tarifs__options">
-        {tarifs.options.map((o) => (
-          <li><strong>{o.label}</strong> — {o.value} <span class="tarifs__tag">optionnel</span></li>
+
+    <div class="ttab__scroll" tabindex="0" role="region" aria-label="Grille des frais de scolarité">
+      <table class="ttab">
+        <thead>
+          <tr>
+            <th scope="col">Classe</th>
+            <th scope="col">Droits<br />d'inscription</th>
+            <th scope="col">Frais<br />généraux</th>
+            <th scope="col">Uniformes</th>
+            <th scope="col">Mensualité</th>
+            <th scope="col" class="ttab__hl">TOTAL<br />inscription</th>
+            <th scope="col">Tenue sport<br /><em>(optionnel)</em></th>
+            <th scope="col">Cantine<br /><em>/mois (optionnel)</em></th>
+          </tr>
+        </thead>
+        {tarifs.groups.map((g) => (
+          <tbody>
+            <tr class="ttab__grouprow"><th colspan="8" scope="colgroup">{g.name}</th></tr>
+            {g.rows.map((r) => (
+              <tr>
+                <th scope="row" class="ttab__classe">{r.classe}</th>
+                <td>{fcfa(r.inscription)}</td>
+                <td>{fcfa(r.generaux)}</td>
+                <td>{fcfa(r.uniformes)}</td>
+                <td class="ttab__mens">{fcfa(r.mensualite)}</td>
+                <td class="ttab__hl">
+                  <s>{fcfa(r.inscription + r.generaux + r.uniformes + r.mensualite)}</s>
+                  <strong>{fcfa(r.generaux + r.uniformes + r.mensualite)}</strong>
+                </td>
+                <td class="ttab__opt">{fcfa(r.sport)}</td>
+                <td class="ttab__opt">{fcfa(r.cantine)}</td>
+              </tr>
+            ))}
+          </tbody>
         ))}
-      </ul>
+      </table>
+    </div>
+    <p class="ttab__legend">Montant barré : total sans l'offre. Montant en gras : total à payer, droits d'inscription déduits.</p>
+
+    <div class="tarifs__foot">
+      <p class="tarifs__eligibility">{tarifs.eligibility}</p>
       {tarifs.notes.map((n) => <p class="tarifs__rule">{n}</p>)}
     </div>
   </section>
@@ -203,7 +316,7 @@ const galerie = [
       <div class="contact__map">
         <iframe
           title="Carte de localisation — SEM School, Malika, Dakar"
-          src="https://www.openstreetmap.org/export/embed.html?bbox=-17.360%2C14.770%2C-17.310%2C14.810&layer=mapnik&marker=14.7906%2C-17.3350"
+          src={mapSrc}
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
         ></iframe>
@@ -279,6 +392,31 @@ const galerie = [
   .atout__title { margin: 0 0 6px; font-size: 16px; color: var(--text-inverse); }
   .atout__text { margin: 0; font-size: 13px; opacity: 0.8; line-height: 1.5; }
 
+  /* ---- Reportage TV ---- */
+  .reportage { padding-block: 56px; background: var(--surface-sunken); }
+  .reportage__inner { display: grid; grid-template-columns: 1fr 1.25fr; gap: 48px; align-items: center; }
+  .reportage__text .overline { margin: 0 0 12px; }
+  .reportage__text .sec-title { margin: 0; }
+  .reportage__desc { font-size: 16px; color: var(--text-body); line-height: var(--leading-relaxed); margin: 16px 0 0; }
+  .reportage__meta { font-size: 13px; font-weight: var(--weight-semibold); color: var(--text-accent); text-transform: uppercase; letter-spacing: 0.06em; margin: 14px 0 0; }
+  /* Façade : vignette locale + bouton lecture, l'iframe la remplace au clic */
+  .reportage__player { position: relative; }
+  .ytfacade { display: block; width: 100%; padding: 0; border: 0; background: var(--navy-900); border-radius: 16px; overflow: hidden; cursor: pointer; box-shadow: var(--shadow-md); }
+  .ytfacade img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; transition: opacity var(--duration-normal) var(--ease-out); }
+  .ytfacade:hover img, .ytfacade:focus-visible img { opacity: 0.8; }
+  .ytfacade__play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 72px; height: 72px; border-radius: var(--radius-circle);
+    background: var(--brand-accent); color: var(--navy-900);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(13, 26, 51, 0.35);
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+  .ytfacade:hover .ytfacade__play { transform: translate(-50%, -50%) scale(1.08); }
+  /* iframe créée par JS : hors portée des styles scopés, d'où :global() */
+  .reportage__player :global(iframe) { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 16px; box-shadow: var(--shadow-md); }
+  .ytfacade__fallback { display: inline-block; margin-top: 12px; color: var(--text-link); }
+
   /* ---- Mot du fondateur ---- */
   .fondateur { padding-block: 72px; }
   .fondateur__grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 64px; align-items: center; }
@@ -320,6 +458,11 @@ const galerie = [
   /* ---- Galerie ---- */
   .galerie { padding-block: 0 64px; }
   .galerie__grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 150px; gap: 14px; }
+  /* Clips d'ambiance en tête de galerie : muets, en boucle, chargés au scroll */
+  .galerie__videos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px; }
+  .gvid { position: relative; margin: 0; border-radius: 16px; overflow: hidden; background: var(--navy-900); }
+  .gvid video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .gvid__cap { position: absolute; inset: auto 0 0 0; padding: 28px 16px 12px; font-size: 13px; font-weight: var(--weight-semibold); color: var(--text-inverse); background: linear-gradient(to top, rgba(13, 26, 51, 0.85), transparent); }
   .galerie__cell { position: relative; }
   .galerie__cell--big { grid-column: span 2; grid-row: span 2; }
 
@@ -342,42 +485,32 @@ const galerie = [
 
   /* ---- Tarifs ---- */
   .tarifs { padding-block: 64px; }
-  .tarifs__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
-  .tcard { background: var(--surface-card); border: 1px solid var(--border-default); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
-  .tcard__head { padding: 20px 22px; border-bottom: 1px solid var(--border-default); }
-  .tcard__name { font-size: 19px; font-weight: var(--weight-bold); color: var(--text-heading); }
-  .tcard__sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .tcard__body { padding: 22px; }
-  .tcard__k { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .tcard__ins { font-size: 26px; font-weight: var(--weight-black); color: var(--brand-primary); margin: 2px 0 14px; }
-  .tcard__mens { font-size: 26px; font-weight: var(--weight-black); color: var(--text-accent); margin-top: 2px; }
-  .tcard__ins span, .tcard__mens span { font-size: 13px; font-weight: var(--weight-semibold); color: var(--text-muted); }
-  /* Carte lycée mise en avant (navy) */
-  .tcard--featured { background: var(--brand-primary); border-color: var(--brand-primary); box-shadow: var(--shadow-md); }
-  .tcard--featured .tcard__head { border-bottom-color: rgba(255, 255, 255, 0.12); }
-  .tcard--featured .tcard__name { color: var(--text-inverse); }
-  .tcard--featured .tcard__sub { color: rgba(255, 255, 255, 0.7); }
-  .tcard--featured .tcard__k { color: rgba(255, 255, 255, 0.6); }
-  .tcard--featured .tcard__ins { color: var(--text-inverse); }
-  .tcard--featured .tcard__mens { color: var(--gold-400); }
-  .tcard--featured .tcard__ins span, .tcard--featured .tcard__mens span { color: rgba(255, 255, 255, 0.6); }
-  /* Frais annexes par carte (uniformes, sport) */
-  .tcard__extras { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-default); display: flex; flex-direction: column; gap: 8px; }
-  .tcard__row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; }
-  .tcard__row > span:first-child { color: var(--text-muted); }
-  .tcard__row > span:last-child { color: var(--text-heading); font-weight: var(--weight-semibold); white-space: nowrap; }
-  .tcard__row em { font-style: normal; font-size: 11px; color: var(--text-muted); }
-  .tcard--featured .tcard__extras { border-top-color: rgba(255, 255, 255, 0.12); }
-  .tcard--featured .tcard__row > span:first-child, .tcard--featured .tcard__row em { color: rgba(255, 255, 255, 0.65); }
-  .tcard--featured .tcard__row > span:last-child { color: var(--text-inverse); }
-  /* Pied de section : options générales + notes */
+  /* Bandeau offre — droits d'inscription offerts */
+  .offre { display: flex; align-items: flex-start; gap: 14px; max-width: 720px; margin: 0 auto var(--space-6); padding: 16px 20px; background: var(--gold-100); border: 1px solid var(--border-accent); border-radius: var(--radius-md); }
+  .offre__badge { flex-shrink: 0; font-size: 10px; font-weight: var(--weight-bold); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-inverse); background: var(--brand-accent); border-radius: var(--radius-pill); padding: 4px 10px; margin-top: 3px; }
+  .offre__title { margin: 0; font-weight: var(--weight-bold); color: var(--text-heading); }
+  .offre__text { margin: 2px 0 0; font-size: 14px; color: var(--text-body); }
+  /* Grille des frais — reprise de la fiche de tarifs officielle */
+  .ttab__scroll { overflow-x: auto; background: var(--surface-card); border: 1px solid var(--border-default); border-radius: 16px; box-shadow: var(--shadow-sm); }
+  .ttab { width: 100%; min-width: 780px; border-collapse: collapse; font-size: 14px; }
+  .ttab thead th { padding: 14px 12px; font-size: 11px; font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); text-align: right; vertical-align: bottom; border-bottom: 1px solid var(--border-default); }
+  .ttab thead th:first-child { text-align: left; padding-left: 20px; }
+  .ttab thead th em { display: block; font-style: normal; font-size: 10px; text-transform: none; letter-spacing: 0; }
+  .ttab thead th.ttab__hl { color: var(--text-accent); }
+  .ttab__grouprow th { padding: 9px 20px; text-align: left; font-size: 11px; font-weight: var(--weight-bold); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-inverse); background: var(--brand-primary); }
+  .ttab tbody td, .ttab tbody th { padding: 12px; text-align: right; white-space: nowrap; color: var(--text-body); border-bottom: 1px solid var(--gray-200); }
+  .ttab tbody .ttab__classe { padding-left: 20px; text-align: left; font-weight: var(--weight-bold); color: var(--text-heading); }
+  .ttab tbody .ttab__mens { font-weight: var(--weight-semibold); color: var(--text-heading); }
+  .ttab tbody .ttab__opt { color: var(--text-muted); }
+  .ttab tbody .ttab__hl { background: var(--gold-100); }
+  .ttab tbody .ttab__hl s { display: block; font-size: 12px; color: var(--text-muted); }
+  .ttab tbody .ttab__hl strong { display: block; font-size: 17px; font-weight: var(--weight-black); color: var(--text-accent); }
+  .ttab tbody:last-child tr:last-child td, .ttab tbody:last-child tr:last-child th { border-bottom: 0; }
+  .ttab__legend { font-size: var(--text-caption); color: var(--text-muted); text-align: center; margin: var(--space-3) 0 0; }
+  /* Pied de section : condition d'application + notes */
   .tarifs__foot { margin-top: var(--space-6); text-align: center; }
-  .tarifs__options { list-style: none; margin: 0 0 var(--space-4); padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; }
-  .tarifs__options li { font-size: 14px; color: var(--text-body); }
-  .tarifs__options strong { color: var(--text-heading); }
-  .tarifs__tag { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-accent); background: var(--gold-100); border-radius: var(--radius-pill); padding: 2px 8px; }
+  .tarifs__eligibility { font-size: 14px; font-weight: var(--weight-semibold); color: var(--text-heading); margin: 0 0 var(--space-3); }
   .tarifs__rule { font-size: var(--text-caption); color: var(--text-muted); margin: 4px 0 0; }
-  .tarifs__note { text-align: center; font-size: var(--text-caption); color: var(--text-muted); font-style: italic; margin: var(--space-4) 0 0; }
 
   /* ---- Contact ---- */
   .contact { background: var(--brand-primary); color: var(--text-inverse); }
@@ -400,7 +533,7 @@ const galerie = [
     .atouts__grid { grid-template-columns: repeat(3, 1fr); gap: 28px; }
     .parcours__grid { grid-template-columns: repeat(2, 1fr); gap: 32px 10px; }
     .parcours__line { display: none; }
-    .tarifs__grid { grid-template-columns: repeat(2, 1fr); }
+    .reportage__inner { grid-template-columns: 1fr; gap: 32px; }
     .contact__grid { grid-template-columns: 1fr; }
     .contact__map { min-height: 260px; }
     .fondateur__grid { grid-template-columns: 1fr; gap: 44px; }
@@ -413,10 +546,12 @@ const galerie = [
     .atouts__grid { grid-template-columns: 1fr; }
     .parcours__grid { grid-template-columns: 1fr; }
     .galerie__grid { grid-template-columns: repeat(2, 1fr); }
+    .galerie__videos { grid-template-columns: 1fr; }
     .galerie__cell--big { grid-column: span 2; grid-row: span 1; }
-    .tarifs__grid { grid-template-columns: 1fr; }
+    .offre { flex-direction: column; gap: 10px; }
     .calendrier__inner { padding-inline: var(--space-6); }
     .contact__info { padding: 40px var(--space-6); }
+    .ytfacade__play { width: 58px; height: 58px; }
     .fondateur__quote { font-size: 18px; }
     .fondateur__badge { width: 60px; height: 60px; top: -16px; right: -8px; }
   }

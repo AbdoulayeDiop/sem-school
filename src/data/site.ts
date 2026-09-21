@@ -25,8 +25,10 @@ export const site = {
     whatsappHref: 'https://wa.me/221765495388',
     email: 'contact@sem-school.com',
     emailHref: 'mailto:contact@sem-school.com',
-    address: 'Malika, Dakar, Sénégal',
+    address: 'Cité Sonatel, Malika (Dakar), à côté du terrain de basket',
     zone: 'Pikine Guédiawaye / Yeumbeul Nord',
+    // Coordonnées exactes du bâtiment (Cité Sonatel, à côté du terrain de basket)
+    coords: { lat: 14.7844466, lon: -17.3376868 },
   },
 } as const;
 
@@ -122,23 +124,64 @@ export const admissions2627 = {
   ],
 } as const;
 
-// Frais de scolarité — VALEURS PROVISOIRES (FCFA), en cartes (design 1B).
+// Reportage TV du lancement — hébergé sur YouTube (façade au clic côté page,
+// aucun appel à Google tant que le visiteur ne lance pas la lecture).
+export const reportage = {
+  youtubeId: 'i9hG3gA9Aog',
+  url: 'https://youtu.be/i9hG3gA9Aog',
+  source: 'Walfadjri TV',
+  duration: '2 min 21',
+  poster: '/video/reportage-walf.webp',
+  title: 'Le lancement de SEM School vu par Walfadjri TV',
+  // PROVISOIRE — description à valider par la direction
+  text: "La chaîne Walfadjri TV a couvert l'inauguration de l'école à Malika.",
+} as const;
+
+// Frais de scolarité 2026-2027 (FCFA) — repris verbatim de la fiche de tarifs
+// officielle. Montants en nombres : les totaux sont calculés à l'affichage
+// (total = droits d'inscription + frais généraux + uniformes + mensualité).
 export const tarifs = {
   currency: 'FCFA',
   provisional: false,
-  rows: [
-    { name: 'Préscolaire', sub: 'PS · MS · GS', inscription: '20 000', mensualite: '15 000', uniformes: '10 000', sport: null, featured: false },
-    { name: 'Élémentaire', sub: 'CI → CM2', inscription: '25 000', mensualite: '20 000', uniformes: '15 000', sport: '8 000', featured: false },
-    { name: 'Collège', sub: '6ème → 3ème', inscription: '30 000', mensualite: '25 000', uniformes: '20 000', sport: '10 000', featured: false },
-    { name: 'Lycée', sub: '2nde → Tle (S & L)', inscription: '35 000', mensualite: '30 000', uniformes: '25 000', sport: '13 000', featured: true },
+  // Condition d'application de la grille
+  eligibility:
+    "Grille réservée aux habitants de la Cité Sonatel, sur présentation d'un justificatif de domicile.",
+  // Offre de lancement : les droits d'inscription sont déduits du total
+  offer: {
+    title: "Droits d'inscription offerts cette année",
+    text: "Pour les élèves habitant les quartiers à proximité, sur présentation d'un certificat de domicile.",
+  },
+  groups: [
+    {
+      name: 'Préscolaire',
+      rows: [
+        { classe: 'P.S', inscription: 15000, generaux: 2000, uniformes: 20000, mensualite: 10000, sport: 10000, cantine: 15000 },
+        { classe: 'M.S', inscription: 15000, generaux: 2000, uniformes: 20000, mensualite: 11000, sport: 10000, cantine: 15000 },
+        { classe: 'G.S', inscription: 15000, generaux: 2000, uniformes: 20000, mensualite: 12000, sport: 10000, cantine: 15000 },
+      ],
+    },
+    {
+      name: 'Élémentaire',
+      rows: [
+        { classe: 'C.I / C.P', inscription: 17000, generaux: 2500, uniformes: 25000, mensualite: 15000, sport: 12500, cantine: 15000 },
+        { classe: 'CE1 / CE2', inscription: 17500, generaux: 2500, uniformes: 25000, mensualite: 16000, sport: 12500, cantine: 15000 },
+        { classe: 'CM1', inscription: 18000, generaux: 2500, uniformes: 25000, mensualite: 18000, sport: 12500, cantine: 15000 },
+      ],
+    },
+    {
+      name: 'Collège / Lycée',
+      rows: [
+        { classe: '6ème / 5ème', inscription: 19000, generaux: 2500, uniformes: 25000, mensualite: 19000, sport: 12500, cantine: 15000 },
+        { classe: '4ème', inscription: 21000, generaux: 2500, uniformes: 25000, mensualite: 21000, sport: 12500, cantine: 15000 },
+        { classe: '2nde', inscription: 23000, generaux: 2500, uniformes: 25000, mensualite: 25000, sport: 12500, cantine: 15000 },
+      ],
+    },
   ],
   notes: [
-    "En plus des frais d'inscription, le dernier mois de scolarité est réglé lors de l'inscription (juin pour le préscolaire et l'élémentaire, juillet pour le collège et le lycée).",
-    'Les 2 uniformes sont obligatoires lors de la première inscription uniquement.',
-  ],
-  options: [
-    { label: 'Cantine', value: '10 000 FCFA / mois' },
-    { label: 'Transport', value: "Tarif selon le lieu d'habitation" },
+    "TOTAL à payer à l'inscription = droits d'inscription + frais généraux + uniformes + dernier mois de scolarité.",
+    "L'uniforme n'est obligatoire qu'à la première inscription.",
+    "Un service de transport est disponible ; les frais varient selon le lieu d'habitation.",
+    'Cours de vacances : début le 10 août 2026, inscription 10 000 FCFA.',
   ],
 } as const;
 

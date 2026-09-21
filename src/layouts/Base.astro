@@ -27,10 +27,15 @@ const jsonLd = {
   telephone: site.contact.phone,
   email: site.contact.email,
   foundingDate: String(site.foundedYear),
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: site.contact.coords.lat,
+    longitude: site.contact.coords.lon,
+  },
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'Malika',
-    addressLocality: 'Dakar',
+    streetAddress: 'Cité Sonatel, à côté du terrain de basket',
+    addressLocality: 'Malika',
     addressRegion: 'Dakar',
     addressCountry: 'SN',
   },
